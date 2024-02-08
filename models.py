@@ -192,7 +192,7 @@ class Baseline(nn.Module):
     """
     @staticmethod
     def weight_init(m):
-        if isinstance(m, nn.Linear):
+        if isinstance(m, BBBLinear):
             init.kaiming_normal_(m.weight)
             init.zeros_(m.bias)
 
@@ -202,14 +202,14 @@ class Baseline(nn.Module):
         if dropout:
             self.dropout = nn.Dropout(p=0.5)
 
-        self.fc1 = nn.Linear(input_channels, 2048)
-        self.fc2 = nn.Linear(2048, 4096)
-        self.fc3 = nn.Linear(4096, 2048)
-        self.fc4 = nn.Linear(2048, n_classes)
+        self.fc1 = BBBLinear(input_channels, 2048)
+        self.fc2 = BBBLinear(2048, 4096)
+        self.fc3 = BBBLinear(4096, 2048)
+        self.fc4 = BBBLinear(2048, n_classes)
 
         self.apply(self.weight_init)
 
-    def forward(self, x):
+   ''' def forward(self, x):
         x = F.relu(self.fc1(x))
         if self.use_dropout:
             x = self.dropout(x)
@@ -220,7 +220,7 @@ class Baseline(nn.Module):
         if self.use_dropout:
             x = self.dropout(x)
         x = self.fc4(x)
-        return x
+        return x'''
 
 class HuEtAl(nn.Module):
     """
@@ -233,7 +233,7 @@ class HuEtAl(nn.Module):
     def weight_init(m):
         # [All the trainable parameters in our CNN should be initialized to
         # be a random value between −0.05 and 0.05.]
-        if isinstance(m, nn.Linear) or isinstance(m, nn.Conv1d):
+        if isinstance(m, BBBLinear) or isinstance(m, nn.Conv1d):
             init.uniform_(m.weight, -0.05, 0.05)
             init.zeros_(m.bias)
 
@@ -259,11 +259,11 @@ class HuEtAl(nn.Module):
         self.pool = nn.MaxPool1d(pool_size)
         self.features_size = self._get_final_flattened_size()
         # [n4 is set to be 100]
-        self.fc1 = nn.Linear(self.features_size, 100)
-        self.fc2 = nn.Linear(100, n_classes)
+        self.fc1 = BBBLinear(self.features_size, 100)
+        self.fc2 = BBBLinear(100, n_classes)
         self.apply(self.weight_init)
 
-    def forward(self, x):
+   ''' def forward(self, x):
         # [In our design architecture, we choose the hyperbolic tangent function tanh(u)]
         x = x.squeeze(dim=-1).squeeze(dim=-1)
         x = x.unsqueeze(1)
@@ -272,7 +272,7 @@ class HuEtAl(nn.Module):
         x = x.view(-1, self.features_size)
         x = torch.tanh(self.fc1(x))
         x = self.fc2(x)
-        return x
+        return x'''
 
 class HamidaEtAl(nn.Module):
     """
@@ -283,7 +283,7 @@ class HamidaEtAl(nn.Module):
     """
     @staticmethod
     def weight_init(m):
-        if isinstance(m, nn.Linear) or isinstance(m, nn.Conv3d):
+        if isinstance(m, BBBLinear) or isinstance(m, nn.Conv3d):
             init.kaiming_normal_(m.weight)
             init.zeros_(m.bias)
 
@@ -326,7 +326,7 @@ class HamidaEtAl(nn.Module):
         self.features_size = self._get_final_flattened_size()
         # The architecture ends with a fully connected layer where the number
         # of neurons is equal to the number of input classes.
-        self.fc = nn.Linear(self.features_size, n_classes)
+        self.fc = BBBLinear(self.features_size, n_classes)
 
         self.apply(self.weight_init)
 
@@ -341,7 +341,7 @@ class HamidaEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-    def forward(self, x):
+   ''' def forward(self, x):
         x = F.relu(self.conv1(x))
         x = self.pool1(x)
         x = F.relu(self.conv2(x))
@@ -352,7 +352,7 @@ class HamidaEtAl(nn.Module):
         #x = self.dropout(x)
         x = self.fc(x)
         return x
-
+'''
 
 class LeeEtAl(nn.Module):
     """
@@ -362,7 +362,7 @@ class LeeEtAl(nn.Module):
     """
     @staticmethod
     def weight_init(m):
-        if isinstance(m, nn.Linear) or isinstance(m, nn.Conv3d):
+        if isinstance(m, BBBLinear) or isinstance(m, nn.Conv3d):
             init.kaiming_uniform_(m.weight)
             init.zeros_(m.bias)
 
@@ -379,19 +379,19 @@ class LeeEtAl(nn.Module):
 
         # We use two modules from the residual learning approach
         # Residual block 1
-        self.conv1 = nn.Conv2d(256, 128, (1, 1))
-        self.conv2 = nn.Conv2d(128, 128, (1, 1))
-        self.conv3 = nn.Conv2d(128, 128, (1, 1))
+        self.conv1 = BBBConv2d(256, 128, (1, 1))
+        self.conv2 = BBBConv2d(128, 128, (1, 1))
+        self.conv3 = BBBConv2d(128, 128, (1, 1))
 
         # Residual block 2
-        self.conv4 = nn.Conv2d(128, 128, (1, 1))
-        self.conv5 = nn.Conv2d(128, 128, (1, 1))
+        self.conv4 = BBBConv2d(128, 128, (1, 1))
+        self.conv5 = BBBConv2d(128, 128, (1, 1))
 
         # The layer combination in the last three convolutional layers
         # is the same as the fully connected layers of Alexnet
-        self.conv6 = nn.Conv2d(128, 128, (1, 1))
-        self.conv7 = nn.Conv2d(128, 128, (1, 1))
-        self.conv8 = nn.Conv2d(128, n_classes, (1, 1))
+        self.conv6 = BBBConv2d(128, 128, (1, 1))
+        self.conv7 = BBBConv2d(128, 128, (1, 1))
+        self.conv8 = BBBConv2d(128, n_classes, (1, 1))
 
         self.lrn1 = nn.LocalResponseNorm(256)
         self.lrn2 = nn.LocalResponseNorm(128)
@@ -401,7 +401,7 @@ class LeeEtAl(nn.Module):
 
         self.apply(self.weight_init)
 
-    def forward(self, x):
+   ''' def forward(self, x):
         # Inception module
         x_3x3 = self.conv_3x3(x)
         x_1x1 = self.conv_1x1(x)
@@ -434,7 +434,7 @@ class LeeEtAl(nn.Module):
         x = self.dropout(x)
         x = self.conv8(x)
         return x
-
+'''
 
 class ChenEtAl(nn.Module):
     """
@@ -447,7 +447,7 @@ class ChenEtAl(nn.Module):
     def weight_init(m):
         # In the beginning, the weights are randomly initialized
         # with standard deviation 0.001
-        if isinstance(m, nn.Linear) or isinstance(m, nn.Conv3d):
+        if isinstance(m, BBBLinear) or isinstance(m, nn.Conv3d):
             init.normal_(m.weight, std=0.001)
             init.zeros_(m.bias)
 
@@ -465,7 +465,7 @@ class ChenEtAl(nn.Module):
 
         self.features_size = self._get_final_flattened_size()
 
-        self.fc = nn.Linear(self.features_size, n_classes)
+        self.fc = BBBLinear(self.features_size, n_classes)
 
         self.dropout = nn.Dropout(p=0.5)
 
@@ -481,7 +481,7 @@ class ChenEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-    def forward(self, x):
+   ''' def forward(self, x):
         x = F.relu(self.conv1(x))
         x = self.pool1(x)
         x = self.dropout(x)
@@ -492,7 +492,7 @@ class ChenEtAl(nn.Module):
         x = self.dropout(x)
         x = x.view(-1, self.features_size)
         x = self.fc(x)
-        return x
+        return x'''
 
 
 class LiEtAl(nn.Module):
@@ -505,7 +505,7 @@ class LiEtAl(nn.Module):
     """
     @staticmethod
     def weight_init(m):
-        if isinstance(m, nn.Linear) or isinstance(m, nn.Conv3d):
+        if isinstance(m, BBBLinear) or isinstance(m, nn.Conv3d):
             init.xavier_uniform_(m.weight.data)
             init.constant_(m.bias.data, 0)
 
@@ -529,7 +529,7 @@ class LiEtAl(nn.Module):
         #self.dropout = nn.Dropout(p=0.5)
         self.features_size = self._get_final_flattened_size()
 
-        self.fc = nn.Linear(self.features_size, n_classes)
+        self.fc = BBBLinear(self.features_size, n_classes)
 
         self.apply(self.weight_init)
 
@@ -542,13 +542,13 @@ class LiEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-    def forward(self, x):
+   ''' def forward(self, x):
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = x.view(-1, self.features_size)
         #x = self.dropout(x)
         x = self.fc(x)
-        return x
+        return x'''
 
 class HeEtAl(nn.Module):
     """
@@ -561,7 +561,7 @@ class HeEtAl(nn.Module):
 
     @staticmethod
     def weight_init(m):
-        if isinstance(m, nn.Linear) or isinstance(m, nn.Conv3d):
+        if isinstance(m, BBBLinear) or isinstance(m, nn.Conv3d):
             init.kaiming_uniform(m.weight)
             init.zeros_(m.bias)
 
@@ -586,7 +586,7 @@ class HeEtAl(nn.Module):
 
         self.features_size = self._get_final_flattened_size()
 
-        self.fc = nn.Linear(self.features_size, n_classes)
+        self.fc = BBBLinear(self.features_size, n_classes)
 
         self.apply(self.weight_init)
 
@@ -609,7 +609,7 @@ class HeEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-    def forward(self, x):
+    '''def forward(self, x):
         x = F.relu(self.conv1(x))
         x2_1 = self.conv2_1(x)
         x2_2 = self.conv2_2(x)
@@ -628,7 +628,7 @@ class HeEtAl(nn.Module):
         x = self.dropout(x)
         x = self.fc(x)
         return x
-
+'''
 class LuoEtAl(nn.Module):
     """
     HSI-CNN: A Novel Convolution Neural Network for Hyperspectral Image
@@ -638,7 +638,7 @@ class LuoEtAl(nn.Module):
 
     @staticmethod
     def weight_init(m):
-        if isinstance(m, (nn.Linear, nn.Conv2d, nn.Conv3d)):
+        if isinstance(m, (BBBLinear, BBBConv2d, nn.Conv3d)):
             init.kaiming_uniform_(m.weight)
             init.zeros_(m.bias)
 
@@ -657,12 +657,12 @@ class LuoEtAl(nn.Module):
         # connected layer FC1 which has n4 nodes.
         # In the four datasets, the kernel height nk1 is 24 and stride s1, s2 is 9 and 1
         self.conv1 = nn.Conv3d(1, 90, (24, 3, 3), padding=0, stride=(9,1,1))
-        self.conv2 = nn.Conv2d(1, 64, (3, 3), stride=(1, 1))
+        self.conv2 = BBBConv2d(1, 64, (3, 3), stride=(1, 1))
 
         self.features_size = self._get_final_flattened_size()
 
-        self.fc1 = nn.Linear(self.features_size, 1024)
-        self.fc2 = nn.Linear(1024, n_classes)
+        self.fc1 = BBBLinear(self.features_size, 1024)
+        self.fc2 = BBBLinear(1024, n_classes)
 
         self.apply(self.weight_init)
 
@@ -677,7 +677,7 @@ class LuoEtAl(nn.Module):
             _, c, w, h = x.size()
         return c * w * h
 
-    def forward(self, x):
+   ''' def forward(self, x):
         x = F.relu(self.conv1(x))
         b = x.size(0)
         x = x.view(b, 1, -1, self.n_planes)
@@ -686,7 +686,7 @@ class LuoEtAl(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
-
+'''
 
 class SharmaEtAl(nn.Module):
     """
@@ -698,7 +698,7 @@ class SharmaEtAl(nn.Module):
 
     @staticmethod
     def weight_init(m):
-        if isinstance(m, (nn.Linear, nn.Conv3d)):
+        if isinstance(m, (BBBLinear, nn.Conv3d)):
             init.kaiming_normal_(m.weight)
             init.zeros_(m.bias)
 
@@ -725,9 +725,9 @@ class SharmaEtAl(nn.Module):
 
         # The fc1 has 1024 outputs, where dropout was applied after
         # fc1 with a rate of 0.5
-        self.fc1 = nn.Linear(self.features_size, 1024)
+        self.fc1 = BBBLinear(self.features_size, 1024)
         self.dropout = nn.Dropout(p=0.5)
-        self.fc2 = nn.Linear(1024, n_classes)
+        self.fc2 = BBBLinear(1024, n_classes)
 
         self.apply(self.weight_init)
 
@@ -750,7 +750,7 @@ class SharmaEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-    def forward(self, x):
+   ''' def forward(self, x):
         x = F.relu(self.conv1_bn(self.conv1(x)))
         x = self.pool1(x)
         b, t, c, w, h = x.size()
@@ -765,7 +765,7 @@ class SharmaEtAl(nn.Module):
         x = self.dropout(x)
         x = self.fc2(x)
         return x
-
+'''
 
 class LiuEtAl(nn.Module):
     """
@@ -776,7 +776,7 @@ class LiuEtAl(nn.Module):
 
     @staticmethod
     def weight_init(m):
-        if isinstance(m, (nn.Linear, nn.Conv2d)):
+        if isinstance(m, (BBBLinear, BBBConv2d)):
             init.kaiming_normal_(m.weight)
             init.zeros_(m.bias)
 
@@ -789,22 +789,22 @@ class LiuEtAl(nn.Module):
         # "W1 is a 3x3xB1 kernel [...] B1 is the number of the output bands for the convolutional
         # "and pooling layer" -> actually 3x3 2D convolutions with B1 outputs
         # "the value of B1 is set to be 80"
-        self.conv1 = nn.Conv2d(input_channels, 80, (3, 3))
+        self.conv1 = BBBConv2d(input_channels, 80, (3, 3))
         self.pool1 = nn.MaxPool2d((2, 2))
         self.conv1_bn = nn.BatchNorm2d(80)
 
         self.features_sizes = self._get_sizes()
 
-        self.fc_enc = nn.Linear(self.features_sizes[2], n_classes)
+        self.fc_enc = BBBLinear(self.features_sizes[2], n_classes)
 
         # Decoder
-        self.fc1_dec = nn.Linear(self.features_sizes[2], self.features_sizes[2])
+        self.fc1_dec = BBBLinear(self.features_sizes[2], self.features_sizes[2])
         self.fc1_dec_bn = nn.BatchNorm1d(self.features_sizes[2])
-        self.fc2_dec = nn.Linear(self.features_sizes[2], self.features_sizes[1])
+        self.fc2_dec = BBBLinear(self.features_sizes[2], self.features_sizes[1])
         self.fc2_dec_bn = nn.BatchNorm1d(self.features_sizes[1])
-        self.fc3_dec = nn.Linear(self.features_sizes[1], self.features_sizes[0])
+        self.fc3_dec = BBBLinear(self.features_sizes[1], self.features_sizes[0])
         self.fc3_dec_bn = nn.BatchNorm1d(self.features_sizes[0])
-        self.fc4_dec = nn.Linear(self.features_sizes[0], input_channels)
+        self.fc4_dec = BBBLinear(self.features_sizes[0], input_channels)
 
         self.apply(self.weight_init)
 
@@ -825,7 +825,7 @@ class LiuEtAl(nn.Module):
 
         return size0, size1, size2
 
-    def forward(self, x):
+    '''def forward(self, x):
         x = x.squeeze()
         x_conv1 = self.conv1_bn(self.conv1(x))
         x = x_conv1
@@ -842,7 +842,7 @@ class LiuEtAl(nn.Module):
         x = F.relu(self.fc3_dec_bn(self.fc3_dec(x) +x_conv1.view(-1, self.features_sizes[0])))
         x = self.fc4_dec(x)
         return x_classif, x
-
+'''
 
 class BoulchEtAl(nn.Module):
     """
@@ -853,7 +853,7 @@ class BoulchEtAl(nn.Module):
 
     @staticmethod
     def weight_init(m):
-        if isinstance(m, (nn.Linear, nn.Conv1d)):
+        if isinstance(m, (BBBLinear, nn.Conv1d)):
             init.kaiming_normal_(m.weight)
             init.zeros_(m.bias)
 
@@ -894,8 +894,8 @@ class BoulchEtAl(nn.Module):
         self.encoder = nn.Sequential(*encoder_modules)
         self.features_sizes = self._get_sizes()
 
-        self.classifier = nn.Linear(self.features_sizes, n_classes)
-        self.regressor = nn.Linear(self.features_sizes, input_channels)
+        self.classifier = BBBLinear(self.features_sizes, n_classes)
+        self.regressor = BBBLinear(self.features_sizes, input_channels)
         self.apply(self.weight_init)
 
     def _get_sizes(self):
@@ -905,14 +905,14 @@ class BoulchEtAl(nn.Module):
             _, c, w = x.size()
         return c*w
 
-    def forward(self, x):
+   ''' def forward(self, x):
         x = x.unsqueeze(1)
         x = self.encoder(x)
         x = x.view(-1, self.features_sizes)
         x_classif = self.classifier(x)
         x = self.regressor(x)
         return x_classif, x
-
+'''
 
 class MouEtAl(nn.Module):
     """
@@ -923,7 +923,7 @@ class MouEtAl(nn.Module):
     @staticmethod
     def weight_init(m):
  # All weight matrices in our RNN and bias vectors are initialized with a uniform distribution, and the values of these weight matrices and bias vectors are initialized in the range [−0.1,0.1]
-        if isinstance(m, (nn.Linear, nn.GRU)):
+        if isinstance(m, (BBBLinear, nn.GRU)):
             init.uniform_(m.weight.data, -0.1, 0.1)
             init.uniform_(m.bias.data, -0.1, 0.1)
 
@@ -934,9 +934,9 @@ class MouEtAl(nn.Module):
         self.gru = nn.GRU(1, 64, 1, bidirectional=False) # TODO: try to change this ?
         self.gru_bn = nn.BatchNorm1d(64*input_channels)
         self.tanh = nn.Tanh()
-        self.fc = nn.Linear(64*input_channels, n_classes)
+        self.fc = BBBLinear(64*input_channels, n_classes)
 
-    def forward(self, x):
+    '''def forward(self, x):
         x = x.squeeze()
         x = x.unsqueeze(0)
         # x is in 1, N, C but we expect C, N, 1 for GRU layer
@@ -948,7 +948,7 @@ class MouEtAl(nn.Module):
         x = self.gru_bn(x)
         x = self.tanh(x)
         x = self.fc(x)
-        return x
+        return x'''
 
 
 def train(net, optimizer, criterion, data_loader, epoch, scheduler=None,
