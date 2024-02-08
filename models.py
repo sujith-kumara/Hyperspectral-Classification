@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Torch
-import layers.misc.ModuleWrapper
+import misc.py.ModuleWrapper
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
@@ -209,7 +209,7 @@ class Baseline(nn.Module):
 
         self.apply(self.weight_init)
 
-'''def forward(self, x):
+        '''def forward(self, x):
         x = F.relu(self.fc1(x))
         if self.use_dropout:
             x = self.dropout(x)
@@ -220,7 +220,8 @@ class Baseline(nn.Module):
         if self.use_dropout:
             x = self.dropout(x)
         x = self.fc4(x)
-        return x'''
+        return x 
+        '''
 
 class HuEtAl(nn.Module):
     """
@@ -263,7 +264,7 @@ class HuEtAl(nn.Module):
         self.fc2 = BBBLinear(100, n_classes)
         self.apply(self.weight_init)
 
-   ''' def forward(self, x):
+        '''def forward(self, x):
         # [In our design architecture, we choose the hyperbolic tangent function tanh(u)]
         x = x.squeeze(dim=-1).squeeze(dim=-1)
         x = x.unsqueeze(1)
@@ -341,7 +342,7 @@ class HamidaEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-   ''' def forward(self, x):
+        '''def forward(self, x):
         x = F.relu(self.conv1(x))
         x = self.pool1(x)
         x = F.relu(self.conv2(x))
@@ -401,7 +402,7 @@ class LeeEtAl(nn.Module):
 
         self.apply(self.weight_init)
 
-   ''' def forward(self, x):
+        '''def forward(self, x):
         # Inception module
         x_3x3 = self.conv_3x3(x)
         x_1x1 = self.conv_1x1(x)
@@ -481,7 +482,7 @@ class ChenEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-   ''' def forward(self, x):
+        '''def forward(self, x):
         x = F.relu(self.conv1(x))
         x = self.pool1(x)
         x = self.dropout(x)
@@ -542,7 +543,7 @@ class LiEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-   ''' def forward(self, x):
+        '''def forward(self, x):
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = x.view(-1, self.features_size)
@@ -609,7 +610,7 @@ class HeEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-    '''def forward(self, x):
+        '''def forward(self, x):
         x = F.relu(self.conv1(x))
         x2_1 = self.conv2_1(x)
         x2_2 = self.conv2_2(x)
@@ -677,7 +678,7 @@ class LuoEtAl(nn.Module):
             _, c, w, h = x.size()
         return c * w * h
 
-   ''' def forward(self, x):
+        '''def forward(self, x):
         x = F.relu(self.conv1(x))
         b = x.size(0)
         x = x.view(b, 1, -1, self.n_planes)
@@ -750,7 +751,7 @@ class SharmaEtAl(nn.Module):
             _, t, c, w, h = x.size()
         return t * c * w * h
 
-   ''' def forward(self, x):
+        '''def forward(self, x):
         x = F.relu(self.conv1_bn(self.conv1(x)))
         x = self.pool1(x)
         b, t, c, w, h = x.size()
@@ -825,7 +826,7 @@ class LiuEtAl(nn.Module):
 
         return size0, size1, size2
 
-    '''def forward(self, x):
+        '''def forward(self, x):
         x = x.squeeze()
         x_conv1 = self.conv1_bn(self.conv1(x))
         x = x_conv1
@@ -905,7 +906,7 @@ class BoulchEtAl(nn.Module):
             _, c, w = x.size()
         return c*w
 
-   ''' def forward(self, x):
+        '''def forward(self, x):
         x = x.unsqueeze(1)
         x = self.encoder(x)
         x = x.view(-1, self.features_sizes)
@@ -936,7 +937,7 @@ class MouEtAl(nn.Module):
         self.tanh = nn.Tanh()
         self.fc = BBBLinear(64*input_channels, n_classes)
 
-    '''def forward(self, x):
+        '''def forward(self, x):
         x = x.squeeze()
         x = x.unsqueeze(0)
         # x is in 1, N, C but we expect C, N, 1 for GRU layer
