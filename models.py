@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Torch
+import layers.misc.ModuleWrapper
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
