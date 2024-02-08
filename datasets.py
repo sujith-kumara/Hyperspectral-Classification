@@ -4,6 +4,7 @@ This file contains the PyTorch dataset for hyperspectral images and
 related helpers.
 """
 import spectral
+import scipy.io
 import numpy as np
 import torch
 import torch.utils
@@ -127,11 +128,14 @@ def get_dataset(dataset_name, target_folder="./", datasets=DATASETS_CONFIG):
 
     elif dataset_name == 'PaviaU':
         # Load the image
-        img = open_file(folder + 'PaviaU.mat')['paviaU']
+        #img = '/PaviaU.mat'#open_file(folder + 'PaviaU.mat')['paviaU']
+        
+        img = scipy.io.loadmat('/PaviaU.mat')['paviaU']
+        gt = scipy.io.loadmat('/PaviaU_gt.mat')['paviaU_gt']
 
         rgb_bands = (55, 41, 12)
 
-        gt = open_file(folder + 'PaviaU_gt.mat')['paviaU_gt']
+        #gt = '/PaviaU_gt.mat'#open_file(folder + 'PaviaU_gt.mat')['paviaU_gt']
 
         label_values = ['Undefined', 'Asphalt', 'Meadows', 'Gravel', 'Trees',
                         'Painted metal sheets', 'Bare Soil', 'Bitumen',
