@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Torch
-import misc.py.ModuleWrapper
+from layers import misc
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
